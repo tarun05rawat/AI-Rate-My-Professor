@@ -1,0 +1,124 @@
+{
+  "reviews": [
+    {
+      "professor": "Dr. John Smith",
+      "subject": "Mathematics",
+      "stars": 4,
+      "review": "Great lectures, but the exams are quite challenging."
+    },
+    {
+      "professor": "Dr. Emily Johnson",
+      "subject": "Physics",
+      "stars": 5,
+      "review": "Explains concepts very clearly. Highly recommend!"
+    },
+    {
+      "professor": "Dr. William Brown",
+      "subject": "Computer Science",
+      "stars": 3,
+      "review": "Interesting assignments, but sometimes hard to follow in class."
+    },
+    {
+      "professor": "Dr. Olivia Davis",
+      "subject": "Chemistry",
+      "stars": 2,
+      "review": "Material is tough, and the professor isn't very approachable."
+    },
+    {
+      "professor": "Dr. Michael Wilson",
+      "subject": "Biology",
+      "stars": 5,
+      "review": "Passionate about the subject and always willing to help."
+    },
+    {
+      "professor": "Dr. Sophia Taylor",
+      "subject": "History",
+      "stars": 4,
+      "review": "Engaging lectures, but grading is strict."
+    },
+    {
+      "professor": "Dr. James Lee",
+      "subject": "English",
+      "stars": 3,
+      "review": "Interesting discussions, but the workload is heavy."
+    },
+    {
+      "professor": "Dr. Isabella White",
+      "subject": "Philosophy",
+      "stars": 4,
+      "review": "Thought-provoking lectures and fair grading."
+    },
+    {
+      "professor": "Dr. Daniel Harris",
+      "subject": "Economics",
+      "stars": 5,
+      "review": "Makes complex topics easy to understand."
+    },
+    {
+      "professor": "Dr. Mia Martin",
+      "subject": "Psychology",
+      "stars": 2,
+      "review": "Content is interesting, but the professor is often unorganized."
+    },
+    {
+      "professor": "Dr. Benjamin Clark",
+      "subject": "Sociology",
+      "stars": 4,
+      "review": "Very approachable and understanding."
+    },
+    {
+      "professor": "Dr. Charlotte Lewis",
+      "subject": "Political Science",
+      "stars": 3,
+      "review": "Lectures are informative, but sometimes monotonous."
+    },
+    {
+      "professor": "Dr. Lucas Walker",
+      "subject": "Statistics",
+      "stars": 5,
+      "review": "Explains statistics in a way that makes it easy to grasp."
+    },
+    {
+      "professor": "Dr. Amelia Hall",
+      "subject": "Art History",
+      "stars": 4,
+      "review": "Passionate about the subject, but sometimes goes off-topic."
+    },
+    {
+      "professor": "Dr. Henry Young",
+      "subject": "Engineering",
+      "stars": 3,
+      "review": "Tough course with lots of work, but learned a lot."
+    },
+    {
+      "professor": "Dr. Grace King",
+      "subject": "Environmental Science",
+      "stars": 4,
+      "review": "Very knowledgeable and helpful during office hours."
+    },
+    {
+      "professor": "Dr. Jack Wright",
+      "subject": "Business",
+      "stars": 2,
+      "review": "Material is dry and the professor doesn't engage with students."
+    },
+    {
+      "professor": "Dr. Victoria Green",
+      "subject": "Linguistics",
+      "stars": 5,
+      "review": "Fantastic professor who really cares about her students."
+    },
+    {
+      "professor": "Dr. Joseph Adams",
+      "subject": "Anthropology",
+      "stars": 4,
+      "review": "Interesting class with a lot of practical examples."
+    },
+    {
+      "professor": "Dr. Evelyn Baker",
+      "subject": "Geography",
+      "stars": 3,
+      "review": "Good content, but sometimes hard to stay engaged."
+    }
+  ]
+}
