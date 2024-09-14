@@ -1,5 +1,6 @@
 'use client'
 import { AutoScroll } from "@fluentui/react";
+import { Box } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -35,9 +36,46 @@ export default function Home() {
       body: JSON.stringify([...messages, 
       {role: "user", content: message}])
     }).then(async(res)=> {
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      let result = '';
+      return reader.read().then(function processText({done, value}) {
+        if (done) {
+          return result;
+        }
+
+        const text = decoder.decode(value || new Uint8Array(), {stream: true})
+
+      setMessages((messages) => {
+        let lastMessage = messages[messages.length - 1]
+        let otherMessages = messages.slice(0, messages.length - 1)
+        return [...otherMessages,{...lastMessage, content: lastMessage.content + text},
+        ]
+      })
+      
+      return reader.read().then(processText);
 
     })
+  })}
+  return <Box
+  width="100vw"
+  height="100vh"
+  display="flex"
+  flexDirection="column"
+  justifyContent="center"
+  alignItems="center">
+    <Stack
+    direction="column"
+    width="500px"
+    height="700px"
+    border="1px solid black"
+    p={2}
+    spacing={3}>
 
-    
-  return <></>
-}}
+
+    </Stack>
+
+  </Box>
+
+}
