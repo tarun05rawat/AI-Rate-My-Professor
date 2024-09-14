@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { api } from "conda";
 import OpenAI from "openai";
+import { last } from "lodash";
 
 const systemPrompt = `
 You are a helpful and knowledgeable "Rate My Professor" agent. Your role is to assist students in finding the best professors according to their specific needs and queries. For each user question, you should retrieve the most relevant professors from the database and provide a detailed summary of the top 3 professors based on the query.
@@ -64,11 +65,55 @@ export async function POST(req) {
     vector: embedding.data[0].embedding,
   });
 
-  let resultString = "";
-  results.matches.forEach((match, i) => {
-    resultString += `Professor ${i + 1}: ${match.metadata.professor}\n`;
-    resultString += `Subject: ${match.metadata.subject}\n`;
-    resultString += `Rating: ${match.metadata.rating}\n`;
-    resultString += `Summary: ${match.metadata.summary}\n`;
+  let resultString =
+    "\n\nReturned Results from vector db (done automatically):\n";
+  results.matches.forEach((match) => {
+    resultString += `\n 
+    Professor: ${match.id}
+    Review: ${match.metadata.review}
+    Subject: ${match.metadata.subject}
+    Stars: ${match.metadata.stars}
+    \n\n
+    `;
   });
+
+  const lastMessage = data[data.length - 1];
+  lastMessageContent = lastMessage.content + resultString;
+  const lastDatawithoutLastMessage = data.slice(0, data.length - 1);
+  const completion = await openai.chat.completions.create({
+    messages: [
+      {
+        role: "system",
+        content: systemPrompt,
+      },
+      ...lastDatawithoutLastMessage,
+      {
+        role: "user",
+        content: lastMessageContent,
+      },
+    ],
+    model: "gpt-4o-mini",
+    stream: true,
+  });
+
+  const stream = ReadableStream({
+    async start(controller) {
+      const encoder = new TextEncoder();
+      try {
+        for await (const chunk of completion) {
+          const content = chunk.choices[0].delta?.content;
+          if (content) {
+            const text = encoder.encode(content);
+            controller.enqueue(text);
+          }
+        }
+      } catch (error) {
+        controller.error(error);
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new NextResponse(stream);
 }
