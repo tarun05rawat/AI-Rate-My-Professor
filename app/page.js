@@ -25,7 +25,7 @@ export default function Home() {
 
     ]);
 
-    
+    setMessage("");
 
     const response = fetch("/api/chat", {
       method: "POST",
@@ -34,8 +34,10 @@ export default function Home() {
       },
       body: JSON.stringify([...messages, 
       {role: "user", content: message}])
-    });
+    }).then(async(res)=> {
 
-    setMessage("");
+    })
 
+    
+  return <></>
 }}
