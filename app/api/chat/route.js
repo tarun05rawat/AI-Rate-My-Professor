@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { Pinecone } from "@pinecone-database/pinecone";
-import { api } from "conda";
 import OpenAI from "openai";
-import { last } from "lodash";
 
+// Define your system prompt
 const systemPrompt = `
 You are a helpful and knowledgeable "Rate My Professor" agent. Your role is to assist students in finding the best professors according to their specific needs and queries. For each user question, you should retrieve the most relevant professors from the database and provide a detailed summary of the top 3 professors based on the query.
 
@@ -45,75 +44,82 @@ Summary: Students appreciate Dr. Taylor's supportive nature and her dedication t
 `;
 
 export async function POST(req) {
-  const data = await req.json();
-  const pc = new Pinecone({
-    apiKey: process.env.PINECONE_API_KEY,
-  });
-  const index = pc.index("rag").namespace("ns1");
-  const openai = new OpenAI();
+  try {
+    const data = await req.json();
+    const pc = new Pinecone({
+      apiKey: process.env.PINECONE_API_KEY,
+    });
+    const index = pc.index("rag").namespace("ns1");
+    const openai = new OpenAI();
 
-  const text = data[data.length - 1].content;
-  const embedding = await OpenAI.Embeddings.create({
-    model: "text-embedding-3-small",
-    input: text,
-    encoding_format: "float",
-  });
+    const text = data[data.length - 1].content;
+    const embedding = await openai.embeddings.create({
+      model: "text-embedding-ada-002",
+      input: text,
+    });
 
-  const results = await index.query({
-    topK: 3,
-    includeMetadata: true,
-    vector: embedding.data[0].embedding,
-  });
+    const results = await index.query({
+      topK: 3,
+      includeMetadata: true,
+      vector: embedding.data[0].embedding,
+    });
 
-  let resultString =
-    "\n\nReturned Results from vector db (done automatically):\n";
-  results.matches.forEach((match) => {
-    resultString += `\n 
-    Professor: ${match.id}
-    Review: ${match.metadata.review}
-    Subject: ${match.metadata.subject}
-    Stars: ${match.metadata.stars}
-    \n\n
-    `;
-  });
+    let resultString =
+      "\n\nReturned Results from vector db (done automatically):\n";
+    results.matches.forEach((match) => {
+      resultString += `\n 
+      Professor: ${match.id}
+      Review: ${match.metadata.review}
+      Subject: ${match.metadata.subject}
+      Stars: ${match.metadata.stars}
+      \n\n
+      `;
+    });
 
-  const lastMessage = data[data.length - 1];
-  lastMessageContent = lastMessage.content + resultString;
-  const lastDatawithoutLastMessage = data.slice(0, data.length - 1);
-  const completion = await openai.chat.completions.create({
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      ...lastDatawithoutLastMessage,
-      {
-        role: "user",
-        content: lastMessageContent,
-      },
-    ],
-    model: "gpt-4o-mini",
-    stream: true,
-  });
+    const lastMessage = data[data.length - 1];
+    const lastMessageContent = lastMessage.content + resultString;
+    const lastDatawithoutLastMessage = data.slice(0, data.length - 1);
+    const completion = await openai.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        ...lastDatawithoutLastMessage,
+        {
+          role: "user",
+          content: lastMessageContent,
+        },
+      ],
+      model: "gpt-4",
+      stream: true,
+    });
 
-  const stream = ReadableStream({
-    async start(controller) {
-      const encoder = new TextEncoder();
-      try {
-        for await (const chunk of completion) {
-          const content = chunk.choices[0].delta?.content;
-          if (content) {
-            const text = encoder.encode(content);
-            controller.enqueue(text);
+    const stream = new ReadableStream({
+      async start(controller) {
+        const encoder = new TextEncoder();
+        try {
+          for await (const chunk of completion) {
+            const content = chunk.choices[0].delta?.content;
+            if (content) {
+              const text = encoder.encode(content);
+              controller.enqueue(text);
+            }
           }
+        } catch (error) {
+          controller.error(error);
+        } finally {
+          controller.close();
         }
-      } catch (error) {
-        controller.error(error);
-      } finally {
-        controller.close();
-      }
-    },
-  });
+      },
+    });
 
-  return new NextResponse(stream);
+    return new NextResponse(stream);
+  } catch (error) {
+    console.error("Error processing request:", error);
+    return NextResponse.json(
+      { message: "Error: Could not process your request." },
+      { status: 500 }
+    );
+  }
 }
