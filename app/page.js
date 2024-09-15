@@ -6,16 +6,10 @@ import {
   TextField,
   Paper,
   Typography,
-  IconButton,
-  Switch,
 } from "@mui/material";
 import { useState, useEffect, useRef } from "react";
-import { createTheme, ThemeProvider, useTheme } from "@mui/material/styles";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
 
 export default function Home() {
-  const [darkMode, setDarkMode] = useState(true);
   const [messages, setMessages] = useState([
     {
       role: "assistant",
@@ -26,48 +20,10 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const messagesEndRef = useRef(null);
 
-  const lightTheme = createTheme({
-    palette: {
-      mode: "light",
-      background: {
-        default: "#f0f4f8",
-        paper: "#ffffff",
-      },
-      primary: {
-        main: "#00796b",
-      },
-      secondary: {
-        main: "#ffb300",
-      },
-    },
-  });
-
-  const darkTheme = createTheme({
-    palette: {
-      mode: "dark",
-      background: {
-        default: "#1c1c1c",
-        paper: "#2c2c2c",
-      },
-      primary: {
-        main: "#26a69a",
-      },
-      secondary: {
-        main: "#ffcc80",
-      },
-    },
-  });
-
-  const theme = darkMode ? darkTheme : lightTheme;
-
   // Scroll to the bottom of the chat when a new message is added
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
-  const handleToggleMode = () => {
-    setDarkMode(!darkMode);
-  };
 
   const sendMessage = async () => {
     setMessages((messages) => [
@@ -124,136 +80,126 @@ export default function Home() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box
-        width="100vw"
-        height="100vh"
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        bgcolor={theme.palette.background.default}
+    <Box
+      width="100vw"
+      height="100vh"
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      bgcolor="#1c1c1c" // Darker background for the page
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          width: "100%",
+          maxWidth: "600px",
+          height: "80vh",
+          display: "flex",
+          flexDirection: "column",
+          borderRadius: "20px",
+          overflow: "hidden",
+          bgcolor: "#2c2c2c", // Dark gray background for the chat window
+        }}
       >
-        <Paper
-          elevation={3}
+        {/* Title Section */}
+        <Box
           sx={{
-            width: "100%",
-            maxWidth: "600px",
-            height: "80vh",
-            display: "flex",
-            flexDirection: "column",
-            borderRadius: "20px",
-            overflow: "hidden",
-            position: "relative",
-            bgcolor: theme.palette.background.paper,
+            p: 2,
+            bgcolor: "#26a69a",
+            textAlign: "center",
+            borderBottom: "1px solid #444",
           }}
         >
-          <Box
-            sx={{
-              position: "absolute",
-              top: 8,
-              right: 8,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <IconButton onClick={handleToggleMode} color="inherit">
-              {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-            </IconButton>
-            <Switch
-              checked={darkMode}
-              onChange={handleToggleMode}
-              color="default"
-            />
-          </Box>
-          <Box
-            sx={{
-              flexGrow: 1,
-              p: 2,
-              display: "flex",
-              flexDirection: "column",
-              overflowY: "auto",
-              bgcolor: theme.palette.background.default,
-            }}
-          >
-            {messages.map((message, index) => (
-              <Box
-                key={index}
-                display="flex"
-                justifyContent={
-                  message.role === "assistant" ? "flex-start" : "flex-end"
-                }
-                mb={2}
-              >
-                <Paper
-                  elevation={2}
-                  sx={{
-                    p: 2,
-                    borderRadius: "15px",
-                    bgcolor:
-                      message.role === "assistant"
-                        ? theme.palette.primary.main
-                        : theme.palette.secondary.main,
-                    color: "white",
-                    maxWidth: "75%",
-                  }}
-                >
-                  <Typography variant="body1">{message.content}</Typography>
-                </Paper>
-              </Box>
-            ))}
-            <div ref={messagesEndRef} />
-          </Box>
-          <Box
-            sx={{
-              p: 2,
-              borderTop: `1px solid ${theme.palette.divider}`,
-              bgcolor: theme.palette.background.paper,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <TextField
-              label="Type a message..."
-              variant="outlined"
-              fullWidth
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === "Enter" && message.trim()) {
-                  sendMessage();
-                }
-              }}
-              sx={{
-                mr: 2,
-                bgcolor: theme.palette.background.default,
-                borderRadius: "20px",
-              }}
-              InputLabelProps={{
-                style: { color: darkMode ? "#bbb" : "#333" }, // Adjust label color based on mode
-              }}
-              InputProps={{
-                style: { color: darkMode ? "white" : "black" }, // Adjust text color based on mode
-              }}
-            />
-            <Button
-              variant="contained"
-              sx={{
-                bgcolor: theme.palette.primary.main,
-                "&:hover": {
-                  bgcolor: darkMode ? "#00796b" : "#005a4f",
-                },
-                borderRadius: "20px",
-                px: 3,
-                height: "100%",
-              }}
-              onClick={sendMessage}
+          <Typography variant="h5" color="white">
+            Rate My Professor Chatbot
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            flexGrow: 1,
+            p: 2,
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "auto",
+            bgcolor: "#3c3c3c", // Lighter gray background for the message area
+          }}
+        >
+          {messages.map((message, index) => (
+            <Box
+              key={index}
+              display="flex"
+              justifyContent={
+                message.role === "assistant" ? "flex-start" : "flex-end"
+              }
+              mb={2}
             >
-              Send
-            </Button>
-          </Box>
-        </Paper>
-      </Box>
-    </ThemeProvider>
+              <Paper
+                elevation={2}
+                sx={{
+                  p: 2,
+                  borderRadius: "15px",
+                  bgcolor: message.role === "assistant" ? "#26a69a" : "#ffcc80", // Teal for assistant, amber for user
+                  color: "white",
+                  maxWidth: "75%",
+                }}
+              >
+                <Typography variant="body1">{message.content}</Typography>
+              </Paper>
+            </Box>
+          ))}
+          <div ref={messagesEndRef} />
+        </Box>
+        <Box
+          sx={{
+            p: 2,
+            borderTop: "1px solid #444", // Slightly lighter border for separation
+            bgcolor: "#2c2c2c", // Same as the chat window background
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <TextField
+            label="Type a message..."
+            variant="outlined"
+            fullWidth
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter" && message.trim()) {
+                sendMessage();
+              }
+            }}
+            sx={{
+              mr: 2,
+              bgcolor: "#444", // Darker input field background
+              borderRadius: "20px",
+            }}
+            InputLabelProps={{
+              style: { color: "#bbb" }, // Light gray label color
+            }}
+            InputProps={{
+              style: { color: "white" }, // White text in the input field
+            }}
+          />
+          <Button
+            variant="contained"
+            sx={{
+              bgcolor: "#26a69a",
+              "&:hover": {
+                bgcolor: "#00796b",
+              },
+              borderRadius: "20px",
+              px: 3,
+              height: "100%",
+            }}
+            onClick={sendMessage}
+          >
+            Send
+          </Button>
+        </Box>
+      </Paper>
+    </Box>
   );
 }
